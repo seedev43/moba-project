@@ -102,7 +102,7 @@ fun Content(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .height(150.dp)
                 .fillMaxWidth()
-                .offset(y = (-40).dp)
+                // .offset(y = (-40).dp)
         ) { page ->
             Card(
                 shape = RoundedCornerShape(12.dp),
@@ -171,8 +171,8 @@ fun Content(modifier: Modifier = Modifier) {
             pagerState = pagerState,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(4.dp)
-                .offset(y = (-30).dp),
+                .padding(4.dp),
+                // .offset(y = (-30).dp),
             activeColor = Color.White,
             inactiveColor = Color.DarkGray
         )
