@@ -171,7 +171,7 @@ fun Content(modifier: Modifier = Modifier) {
             pagerState = pagerState,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(4.dp),
+                .padding(16.dp),
                 // .offset(y = (-30).dp),
             activeColor = Color.White,
             inactiveColor = Color.DarkGray
@@ -185,7 +185,7 @@ fun Content(modifier: Modifier = Modifier) {
             text = "Popular Now",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(start = 15.dp)
+            modifier = Modifier.padding(15.dp)
         )
 
         // Daftar Film Populer
