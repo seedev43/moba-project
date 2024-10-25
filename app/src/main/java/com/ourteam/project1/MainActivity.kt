@@ -39,7 +39,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import com.google.accompanist.pager.*
 
+@ExperimentalPagerApi
 @ExperimentalMaterial3Api
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,8 +49,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             Project1Theme(darkTheme = false) {
-                // WelcomeScreen()
                 HomeScreen()
+                // WelcomeScreen()
             }
         }
     }
