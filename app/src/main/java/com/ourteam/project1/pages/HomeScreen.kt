@@ -22,6 +22,8 @@ import com.ourteam.project1.ui.theme.MainColor
 import com.ourteam.project1.ui.theme.ThirdColor
 import com.ourteam.project1.R
 import com.ourteam.project1.data.NavItem
+import com.ourteam.project1.data.MovieRepository
+import com.ourteam.project1.components.MainLayout
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.Column
@@ -64,6 +66,9 @@ import androidx.compose.material.icons.filled.Settings
 @ExperimentalMaterial3Api
 @Composable
 fun HomeScreen() {
+    MainLayout {
+        Text("oke")
+    }
     val navItemList = listOf(
         NavItem("Home", Icons.Default.Home),
         NavItem("Search", Icons.Default.Search),
@@ -106,7 +111,7 @@ fun HomeScreen() {
         }
     ) { paddingValues ->
         Content(
-            modifier = Modifier.padding(paddingValues).padding(top = 10.dp)
+            Modifier.padding(paddingValues)
         )
     }
 }
@@ -116,11 +121,9 @@ fun HomeScreen() {
 fun Content(modifier: Modifier = Modifier) {
     val scrollState = rememberScrollState()
 
-    val imageSlider = listOf(
-        painterResource(id = R.drawable.image),
-        painterResource(id = R.drawable.image),
-        painterResource(id = R.drawable.image)
-    )
+    val popularMovies = MovieRepository.getPopularMovies()
+    val imageSlider = popularMovies.map { painterResource(id = it.imageResource) } // Mengambil gambar dari film populer
+
     val pagerState = rememberPagerState(initialPage = 0)
 
     // menjalankan gambar slider
@@ -134,15 +137,15 @@ fun Content(modifier: Modifier = Modifier) {
     }
 
     Column(
-        modifier = Modifier
-        .fillMaxWidth()
+        modifier = modifier
         .verticalScroll(scrollState)
+        .fillMaxWidth()
     ) {
         // logo tmdb
         Image(
             painter = painterResource(id = R.drawable.tmdb),
             contentDescription = "Logo",
-            modifier = modifier
+            modifier = Modifier
             .width(120.dp)
             .padding(15.dp)
         )
@@ -153,8 +156,8 @@ fun Content(modifier: Modifier = Modifier) {
             state = pagerState,
             contentPadding = PaddingValues(horizontal = 15.dp),
             modifier = Modifier
-                .height(150.dp)
                 .fillMaxWidth()
+                .height(150.dp)
         ) { page ->
             Card(
                 shape = RoundedCornerShape(12.dp),
@@ -183,7 +186,7 @@ fun Content(modifier: Modifier = Modifier) {
                             .padding(8.dp)
                     ) {
                         Text(
-                            text = "The Amazing Spiderman (2024)", 
+                            text = popularMovies[page].title, 
                             color = Color.White,
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold
@@ -193,7 +196,7 @@ fun Content(modifier: Modifier = Modifier) {
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
-                                text = "Action, Sci-Fi", 
+                                text = popularMovies[page].genre, 
                                 color = Color.White,
                                 fontSize = 12.sp
                             )
@@ -201,7 +204,7 @@ fun Content(modifier: Modifier = Modifier) {
                                 verticalAlignment = Alignment.CenterVertically 
                             ) {
                                 Text(
-                                    text = "8.5",
+                                    text = popularMovies[page].rating.toString(),
                                     color = Color.White,
                                     fontSize = 14.sp
                                 )
@@ -222,8 +225,8 @@ fun Content(modifier: Modifier = Modifier) {
         HorizontalPagerIndicator(
             pagerState = pagerState,
             modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(16.dp),
+            .padding(16.dp)
+                .align(Alignment.CenterHorizontally),
             activeColor = Color.White,
             inactiveColor = Color.DarkGray
         )
@@ -274,8 +277,8 @@ LazyRow(
                 text = "The Amazing Spiderman (2024)",
                 modifier = Modifier
                     .fillMaxWidth()
-                    .wrapContentHeight()
-                    .padding(top = 8.dp),
+                    .padding(top = 8.dp)
+                    .wrapContentHeight(),
                 maxLines = 4,
                 fontSize = 14.sp
             )
