@@ -6,6 +6,9 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.Color
@@ -18,6 +21,7 @@ import androidx.compose.foundation.Image
 import com.ourteam.project1.ui.theme.MainColor
 import com.ourteam.project1.ui.theme.ThirdColor
 import com.ourteam.project1.R
+import com.ourteam.project1.data.NavItem
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.Column
@@ -36,6 +40,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.background
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import kotlinx.coroutines.yield
 import kotlinx.coroutines.delay
 import androidx.compose.ui.graphics.graphicsLayer
@@ -48,15 +55,55 @@ import com.google.accompanist.pager.*
 import kotlin.math.absoluteValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 
 
 @ExperimentalPagerApi
 @ExperimentalMaterial3Api
 @Composable
 fun HomeScreen() {
+    val navItemList = listOf(
+        NavItem("Home", Icons.Default.Home),
+        NavItem("Search", Icons.Default.Search),
+        NavItem("Settings", Icons.Default.Settings),
+    )
     Scaffold(
-        containerColor = MainColor,
-        contentColor = Color.White
+        bottomBar = {
+            NavigationBar(
+                modifier = Modifier
+                .fillMaxWidth()
+                .height(120.dp),
+                containerColor = MainColor,
+                contentColor = Color.White
+            ) {
+                navItemList.forEachIndexed { index, navItem ->
+                    NavigationBarItem(
+                        colors = NavigationBarItemColors(
+                            selectedIndicatorColor = Color.Transparent,
+                            selectedIconColor = ThirdColor,
+                            selectedTextColor = ThirdColor,
+                            unselectedIconColor = Color.White,
+                            unselectedTextColor = Color.White,
+                            disabledIconColor = Color.Gray,
+                            disabledTextColor = Color.Gray   
+                        ),
+                        selected = false,
+                        onClick = {},
+                        icon = {
+                            Icon(
+                                imageVector = navItem.icon,
+                                contentDescription = navItem.label
+                            )
+                        },
+                        label = {
+                            Text(text = navItem.label)
+                        }
+                    )
+                }
+            }
+        }
     ) { paddingValues ->
         Content(
             modifier = Modifier.padding(paddingValues).padding(top = 10.dp)
@@ -67,6 +114,8 @@ fun HomeScreen() {
 @ExperimentalPagerApi
 @Composable
 fun Content(modifier: Modifier = Modifier) {
+    val scrollState = rememberScrollState()
+
     val imageSlider = listOf(
         painterResource(id = R.drawable.image),
         painterResource(id = R.drawable.image),
@@ -74,6 +123,7 @@ fun Content(modifier: Modifier = Modifier) {
     )
     val pagerState = rememberPagerState(initialPage = 0)
 
+    // menjalankan gambar slider
     LaunchedEffect(Unit) {
         while (true) {
             delay(3000)
@@ -84,8 +134,11 @@ fun Content(modifier: Modifier = Modifier) {
     }
 
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+        .fillMaxWidth()
+        .verticalScroll(scrollState)
     ) {
+        // logo tmdb
         Image(
             painter = painterResource(id = R.drawable.tmdb),
             contentDescription = "Logo",
@@ -102,7 +155,6 @@ fun Content(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .height(150.dp)
                 .fillMaxWidth()
-                // .offset(y = (-40).dp)
         ) { page ->
             Card(
                 shape = RoundedCornerShape(12.dp),
@@ -172,7 +224,6 @@ fun Content(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(16.dp),
-                // .offset(y = (-30).dp),
             activeColor = Color.White,
             inactiveColor = Color.DarkGray
         )
@@ -204,7 +255,8 @@ LazyRow(
         Column(
             modifier = Modifier
                 .padding(15.dp)
-                .width(110.dp) // Mengatur lebar kolom
+                .width(120.dp) 
+                // .clickable
         ) {
             Surface(
                 modifier = Modifier
