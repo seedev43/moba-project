@@ -23,21 +23,8 @@ import com.ourteam.project1.ui.theme.ThirdColor
 import com.ourteam.project1.R
 import com.ourteam.project1.data.NavItem
 import com.ourteam.project1.data.MovieRepository
-import com.ourteam.project1.components.MainLayout
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.wrapContentHeight
+import com.ourteam.project1.components.ImageSlider
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.background
 import androidx.compose.foundation.lazy.LazyRow
@@ -47,8 +34,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import kotlinx.coroutines.yield
 import kotlinx.coroutines.delay
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.util.lerp
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.font.FontWeight
@@ -60,30 +45,28 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
-
+import androidx.navigation.NavController
 
 @ExperimentalPagerApi
-@ExperimentalMaterial3Api
 @Composable
-fun HomeScreen() {
-    MainLayout {
-        Text("oke")
-    }
+fun HomeScreen(navController: NavController) {
     val navItemList = listOf(
         NavItem("Home", Icons.Default.Home),
         NavItem("Search", Icons.Default.Search),
         NavItem("Settings", Icons.Default.Settings),
     )
+
     Scaffold(
         bottomBar = {
             NavigationBar(
                 modifier = Modifier
                 .fillMaxWidth()
                 .height(120.dp),
+                // ubah warna background
                 containerColor = MainColor,
                 contentColor = Color.White
             ) {
-                navItemList.forEachIndexed { index, navItem ->
+                navItemList.forEachIndexed { _, navItem ->
                     NavigationBarItem(
                         colors = NavigationBarItemColors(
                             selectedIndicatorColor = Color.Transparent,
@@ -111,128 +94,33 @@ fun HomeScreen() {
         }
     ) { paddingValues ->
         Content(
-            Modifier.padding(paddingValues)
+            modifier = Modifier.padding(paddingValues),
+            navController = navController // pass navController here
         )
     }
 }
 
 @ExperimentalPagerApi
 @Composable
-fun Content(modifier: Modifier = Modifier) {
+fun Content(modifier: Modifier = Modifier, navController: NavController) { // add navController as parameter
     val scrollState = rememberScrollState()
-
-    val popularMovies = MovieRepository.getPopularMovies()
-    val imageSlider = popularMovies.map { painterResource(id = it.imageResource) } // Mengambil gambar dari film populer
-
-    val pagerState = rememberPagerState(initialPage = 0)
-
-    // menjalankan gambar slider
-    LaunchedEffect(Unit) {
-        while (true) {
-            delay(3000)
-            pagerState.animateScrollToPage(
-                page = (pagerState.currentPage + 1) % imageSlider.size
-            )
-        }
-    }
 
     Column(
         modifier = modifier
-        .verticalScroll(scrollState)
-        .fillMaxWidth()
+            .verticalScroll(scrollState)
+            .fillMaxSize()
     ) {
         // logo tmdb
         Image(
             painter = painterResource(id = R.drawable.tmdb),
             contentDescription = "Logo",
             modifier = Modifier
-            .width(120.dp)
-            .padding(15.dp)
+                .width(120.dp)
+                .padding(15.dp)
         )
 
         // Gambar Slider
-        HorizontalPager(
-            count = imageSlider.size,
-            state = pagerState,
-            contentPadding = PaddingValues(horizontal = 15.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(150.dp)
-        ) { page ->
-            Card(
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .graphicsLayer {
-                        val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue
-
-                        scaleX = lerp(0.85f, 1f, 1f - pageOffset.coerceIn(0f, 1f))
-                        scaleY = scaleX
-                        alpha = lerp(0.5f, 1f, 1f - pageOffset.coerceIn(0f, 1f))
-                    }
-            ) {
-                Box {
-                    Image(
-                        painter = imageSlider[page],
-                        contentDescription = "",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                    
-                    Column(
-                        modifier = Modifier
-                            // mengatur teks agar di posisi pojok kiri bawah
-                            .align(Alignment.BottomStart) 
-                            .padding(8.dp)
-                    ) {
-                        Text(
-                            text = popularMovies[page].title, 
-                            color = Color.White,
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = popularMovies[page].genre, 
-                                color = Color.White,
-                                fontSize = 12.sp
-                            )
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically 
-                            ) {
-                                Text(
-                                    text = popularMovies[page].rating.toString(),
-                                    color = Color.White,
-                                    fontSize = 14.sp
-                                )
-                                Icon(
-                                    imageVector = Icons.Filled.Star,
-                                    contentDescription = "Rating",
-                                    tint = ThirdColor,
-                                    modifier = Modifier.padding(start = 4.dp).size(16.dp) 
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // Indikator Pager
-        HorizontalPagerIndicator(
-            pagerState = pagerState,
-            modifier = Modifier
-            .padding(16.dp)
-                .align(Alignment.CenterHorizontally),
-            activeColor = Color.White,
-            inactiveColor = Color.DarkGray
-        )
-
-        // Jarak antara slider dan bagian Popular Now
-        // Spacer(modifier = Modifier.height(5.dp))
+        ImageSlider(modifier)
 
         // Bagian Popular Now
         Text(
@@ -243,57 +131,51 @@ fun Content(modifier: Modifier = Modifier) {
         )
 
         // Daftar Film Populer
-        val popularMovies = listOf(
-    R.drawable.image, 
-    R.drawable.image,
-    R.drawable.image,
-    R.drawable.image,
-    R.drawable.image
-)
+        val popularMovies = MovieRepository.getPopularMovies()
 
-LazyRow(
-    modifier = Modifier.fillMaxWidth()
-) {
-    items(popularMovies) { movie ->
-        Column(
-            modifier = Modifier
-                .padding(15.dp)
-                .width(120.dp) 
-                // .clickable
+        LazyRow(
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth(), // Memastikan surface mengisi lebar kolom
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = movie),
-                    contentDescription = "Film Populer",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.height(160.dp)
-                )
+            items(popularMovies) { movie ->
+                Column(
+                    modifier = Modifier
+                        .padding(15.dp)
+                        .width(120.dp)
+                        .clickable {
+                            navController.navigate("detail/${movie.id}")
+                        }
+                ) {
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth(), // Memastikan surface mengisi lebar kolom
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Image(
+                            painter = painterResource(id = movie.imageResource),
+                            contentDescription = "Film Populer",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.height(160.dp)
+                        )
+                    }
+                    Text(
+                        text = movie.title,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp)
+                            .wrapContentHeight(),
+                        maxLines = 4,
+                        fontSize = 14.sp
+                    )
+                    Text(
+                        text = movie.genre,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight(),
+                        maxLines = 4,
+                        fontSize = 12.sp
+                    )
+                }
             }
-            Text(
-                text = "The Amazing Spiderman (2024)",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp)
-                    .wrapContentHeight(),
-                maxLines = 4,
-                fontSize = 14.sp
-            )
-            Text(
-                text = "Action, Sci-Fi",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight(),
-                maxLines = 4,
-                fontSize = 12.sp
-            )
         }
     }
 }
-
-    }
-}
-

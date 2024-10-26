@@ -14,25 +14,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.Alignment
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import com.ourteam.project1.ui.theme.ThirdColor
 import com.ourteam.project1.R
+import androidx.navigation.NavController
+
 
 
 @ExperimentalMaterial3Api
 @Composable
-fun WelcomeScreen() {
+fun WelcomeScreen(navController: NavController) {
     // Box(
     //     modifier = Modifier.fillMaxSize()
     // ) {
@@ -87,7 +82,9 @@ fun WelcomeScreen() {
             )
 
             Button(
-                onClick = { },
+                onClick = { 
+                    navController.navigate("home")
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
