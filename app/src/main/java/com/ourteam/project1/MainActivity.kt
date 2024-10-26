@@ -34,6 +34,7 @@ import com.ourteam.project1.ui.theme.ThirdColor
 import com.ourteam.project1.pages.WelcomeScreen
 import com.ourteam.project1.pages.HomeScreen
 import com.ourteam.project1.pages.DetailScreen
+import com.ourteam.project1.pages.LoginPage
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.material3.MaterialTheme
@@ -56,9 +57,12 @@ class MainActivity : ComponentActivity() {
         setContent {
             Project1Theme(darkTheme = false) {
                 val navController = rememberNavController()
-                NavHost(navController, startDestination = "home") {
+                NavHost(navController, startDestination = "welcome") {
                     composable("welcome") { 
                         WelcomeScreen(navController) 
+                    }
+                    composable("login") { 
+                        LoginPage(navController) 
                     }
                     composable("home") { 
                         HomeScreen(navController) 

@@ -83,7 +83,7 @@ fun WelcomeScreen(navController: NavController) {
 
             Button(
                 onClick = { 
-                    navController.navigate("home")
+                    navController.navigate("login")
                 },
                 modifier = Modifier
                     .fillMaxWidth()
